@@ -21,7 +21,7 @@ app.get("/api/test", (req, res) => {
     console.log("Test successful");
     console.log("Headers received", req.headers);
     
-    const token = jwt.sign({ userId: '123' }, 'suaChaveSecretaMudarValorEcolocarNoEnv', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: '123',teste:"batata" }, 'suaChaveSecretaMudarValorEcolocarNoEnv', { expiresIn: '1h' });
 
     // Adicionando o token JWT como um cookie na resposta
     res.cookie('jwtToken', token, { 
