@@ -19,4 +19,35 @@ router.get("/",(req,res)=>{
 });
 
 
+
+
+
+router.get("/test", (req, res) => {
+    // Extrair o token do cookie
+    const token = req.headers.cookie.split('; ').find(cookie => cookie.startsWith('jwtToken=')).split('=')[1];
+
+
+  
+    console.log(token)
+
+    // Verificar se o token está presente
+    if (!token) {
+        return res.status(401).json({ message: "Token não fornecido" });
+    }
+
+    try {
+        // Verificar se o token é válido usando o segredo do .env
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Se o token for válido, você pode prosseguir com a lógica do seu endpoint
+        // Por exemplo, você pode retornar uma resposta bem-sucedida
+        res.json({ message: "Token válido. Você pode acessar este recurso." });
+    } catch (err) {
+        // Se houver algum erro ao verificar o token, provavelmente é inválido ou expirado
+        return res.status(401).json({ message: "Token inválido" });
+    }
+});
+
+
+
 module.exports=router;
