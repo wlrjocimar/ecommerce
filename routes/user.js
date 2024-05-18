@@ -35,6 +35,10 @@ router.get("/test", (req, res) => {
         return res.status(401).json({ message: "Token não fornecido" });
     }
 
+    if (req.protocol !== 'https') {
+        return res.status(403).json({ message: "Acesso permitido apenas por HTTPS" });
+    }
+
     try {
         // Verificar se o token é válido usando o segredo do .env
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
