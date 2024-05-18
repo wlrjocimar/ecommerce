@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-const userRouter = require("./routes/user.js")
+const userRouter = require("./src/routes/user.js")
 
 dotenv.config();
 
@@ -21,7 +21,7 @@ mongoose.connect(process.env.MONGO_URL)
     console.log("Authentication failed :",err.errmsg)
 
 })
-
+app.use(express.json());
 
 router.get("/", (req,res)=>{
     res.send("Base application")
