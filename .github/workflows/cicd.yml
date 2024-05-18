@@ -62,5 +62,5 @@ jobs:
           fi
           
           # Continuar com o deploy
-          git pull origin master
+          git pull origin master && npm install && pm2 restart ec-api
         EOF
