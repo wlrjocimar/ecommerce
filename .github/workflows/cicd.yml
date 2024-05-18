@@ -13,8 +13,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
       
-
-      
     - name: Install SSH key
       uses: webfactory/ssh-agent@v0.5.3
       with:
@@ -26,6 +24,26 @@ jobs:
         touch ~/.ssh/config
         echo "StrictHostKeyChecking no" >> ~/.ssh/config
       
-    - name: Deploy code
+    - name: Commit and deploy code
       run: |
-        ssh root@inovaestudios.com.br "cd /dados/webapps/ecommerce  && git pull"
+        ssh root@inovaestudios.com.br << 'EOF'
+          cd /dados/webapps/ecommerce
+          
+          # Verificar se há mudanças locais
+          if [[ -n $(git status -s) ]]; then
+            # Adicionar todas as mudanças
+            git add .
+            
+            # Fazer commit das mudanças
+            git commit -m "Commit automático das mudanças locais antes do deploy"
+            
+            # Puxar as mudanças do repositório remoto para evitar conflitos
+            git pull origin master --rebase
+            
+            # Empurrar as mudanças para o repositório remoto
+            git push origin master
+          fi
+          
+          # Continuar com o deploy
+          git pull origin master
+        EOF
