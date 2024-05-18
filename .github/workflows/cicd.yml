@@ -28,7 +28,7 @@ jobs:
       run: |
         ssh root@inovaestudios.com.br << 'EOF'
           cd /dados/webapps/ecommerce
-          
+
           # Configurar Git para rebase automático
           git config pull.rebase true
           
@@ -37,10 +37,10 @@ jobs:
             rm -rf .git/rebase-merge
           fi
           
-          # Verificar se há mudanças locais
-          if [[ -n $(git status -s) ]]; then
-            # Adicionar todas as mudanças
-            git add .
+          # Verificar se há mudanças locais, exceto o .env
+          if [[ -n $(git status -s . | grep -v ".env") ]]; then
+            # Adicionar todas as mudanças, exceto o .env
+            git add -u
             
             # Fazer commit das mudanças
             git commit -m "Commit automático das mudanças locais antes do deploy"
@@ -48,7 +48,7 @@ jobs:
             # Tentar fazer o rebase
             if ! git pull origin master --rebase; then
               # Em caso de conflito, resolver automaticamente escolhendo as mudanças do repositório remoto
-              git reset --hard HEAD
+              git rebase --abort || true
               git pull origin master
             fi
             
@@ -56,6 +56,10 @@ jobs:
             git push origin master
           fi
           
-          # Continuar com o deploy
-          git pull origin master
+          # Continuar com o deploy, preservando o .env
+          git fetch origin
+          git reset --hard origin/master
+          
+          # Restaurar o .env
+          git checkout -- .env
         EOF
