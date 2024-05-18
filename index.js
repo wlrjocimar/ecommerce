@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const userRouter = require("./src/routes/user.js")
+const authRouter = require("./src/routes/auth.js")
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ router.get("/", (req,res)=>{
 
 //midleware
 app.use(basePath + "/users", userRouter);
+app.use(basePath + "/auth", authRouter);
 
 
 
