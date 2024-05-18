@@ -34,6 +34,7 @@ router.get("/test", (req, res) => {
     if (!token) {
         return res.status(401).json({ message: "Token não fornecido" });
     }
+    console.log((req.headers['x-forwarded-proto']);
 
     if (req.headers['x-forwarded-proto'] !== 'https') {
         return res.status(403).json({ message: "Acesso permitido apenas por HTTPS" });
