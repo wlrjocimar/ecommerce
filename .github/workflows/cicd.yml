@@ -48,7 +48,7 @@ jobs:
             # Tentar fazer o rebase
             if ! git pull origin master --rebase; then
               # Em caso de conflito, resolver automaticamente escolhendo as mudanças do repositório remoto
-              git rebase --abort || true
+              git reset --hard HEAD
               git pull origin master
             fi
             
