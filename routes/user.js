@@ -35,9 +35,10 @@ router.get("/test", (req, res) => {
         return res.status(401).json({ message: "Token não fornecido" });
     }
 
-    if (req.protocol !== 'https') {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
         return res.status(403).json({ message: "Acesso permitido apenas por HTTPS" });
     }
+
 
     try {
         // Verificar se o token é válido usando o segredo do .env
