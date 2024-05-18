@@ -33,6 +33,7 @@ app.use(basePath + "/users", userRouter);
 
 
 // Aplique o basePath às rotas
+//
 app.use(basePath, router);
 
 
