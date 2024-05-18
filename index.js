@@ -3,7 +3,14 @@ const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const jwt = require('jsonwebtoken');
+const router = express.Router();
+
+const userRouter = require("./routes/user.js")
+
 dotenv.config();
+
+// Defina o basePath, por exemplo, '/api'
+const basePath = '/ec-api';
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
@@ -16,21 +23,17 @@ mongoose.connect(process.env.MONGO_URL)
 })
 
 
-
-app.get("/api/test", (req, res) => {
-    console.log("Test successful");
-    console.log("Headers received", req.headers);
-    
-    const token = jwt.sign({ userId: '123',teste:"batata" }, 'suaChaveSecretaMudarValorEcolocarNoEnv', { expiresIn: '1h' });
-
-    // Adicionando o token JWT como um cookie na resposta
-    res.cookie('jwtToken', token, { 
-        maxAge: 3600000, // Tempo de vida do cookie em milissegundos (1 hora)
-        httpOnly: true // Define se o cookie é acessível apenas pelo servidor
-    });
-    
-    res.status(200).json({ result: "ok" });
+router.get("/", (req,res)=>{
+    res.send("Base application")
 });
+
+//midleware
+app.use(basePath + "/users", userRouter);
+
+
+
+// Aplique o basePath às rotas
+app.use(basePath, router);
 
 
 
@@ -38,3 +41,5 @@ app.get("/api/test", (req, res) => {
 app.listen(5000,()=>{
     console.log("Backend server is running!!")
 })
+
+
