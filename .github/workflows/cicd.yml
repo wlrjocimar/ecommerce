@@ -29,6 +29,14 @@ jobs:
         ssh root@inovaestudios.com.br << 'EOF'
           cd /dados/webapps/ecommerce
           
+          # Configurar Git para rebase automático
+          git config pull.rebase true
+          
+          # Remover estado de rebase existente, se houver
+          if [ -d ".git/rebase-merge" ]; then
+            rm -rf .git/rebase-merge
+          fi
+          
           # Verificar se há mudanças locais
           if [[ -n $(git status -s) ]]; then
             # Adicionar todas as mudanças
