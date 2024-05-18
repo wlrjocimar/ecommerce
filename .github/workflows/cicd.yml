@@ -37,8 +37,12 @@ jobs:
             # Fazer commit das mudanças
             git commit -m "Commit automático das mudanças locais antes do deploy"
             
-            # Puxar as mudanças do repositório remoto para evitar conflitos
-            git pull origin master --rebase
+            # Tentar fazer o rebase
+            if ! git pull origin master --rebase; then
+              # Em caso de conflito, resolver automaticamente escolhendo as mudanças do repositório remoto
+              git rebase --abort || true
+              git pull origin master
+            fi
             
             # Empurrar as mudanças para o repositório remoto
             git push origin master
