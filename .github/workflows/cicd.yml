@@ -48,7 +48,7 @@ jobs:
             # Tentar fazer o rebase
             if ! git pull origin master --rebase; then
               # Em caso de conflito, resolver automaticamente escolhendo as mudanças do repositório remoto
-              git rebase --abort || true
+              git reset --hard HEAD
               git pull origin master
             fi
             
@@ -56,10 +56,11 @@ jobs:
             git push origin master
           fi
           
-          # Continuar com o deploy, preservando o .env
-          git fetch origin
-          git reset --hard origin/master
+          # Se o arquivo .env existir no servidor, restaurá-lo
+          if [ -f ".env" ]; then
+            git checkout -- .env
+          fi
           
-          # Restaurar o .env
-          git checkout -- .env
+          # Continuar com o deploy
+          git pull origin master
         EOF
