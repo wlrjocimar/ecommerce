@@ -24,6 +24,14 @@ router.get("/",(req,res)=>{
 
 router.get("/test", (req, res) => {
     // Extrair o token do cookie
+
+
+    if(req.headers.cookie===undefined){
+        res.status(401).json("User not authenticated!!")
+
+    }
+
+
     const token = req.headers.cookie.split('; ').find(cookie => cookie.startsWith('jwtToken=')).split('=')[1];
 
 
