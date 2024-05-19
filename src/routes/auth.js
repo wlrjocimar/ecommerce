@@ -39,10 +39,15 @@ router.post("/login", async (req, res) => {
       return res.status(404).send("Usuário não encontrado");
     }
 
-    console.log(user);
+   
 
     const bytes = CryptoJS.AES.decrypt(user.password, process.env.PASS_SECRET);
     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
+
+    console.log(user);
+    console.log("Hash da senha: ", password)
+    console.log("Senha decrypt: ", decryptedData)
+
 
     if (password === decryptedData) {
       const token = jwt.sign(
