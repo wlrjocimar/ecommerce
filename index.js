@@ -3,15 +3,22 @@ const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const jwt = require('jsonwebtoken');
-const router = express.Router();
+const secureRoutes  = express.Router();
+const cookieParser = require('cookie-parser');
 
 const userRouter = require("./src/routes/user.js")
-const authRouter = require("./src/routes/auth.js")
+const authRouter = require("./src/routes/auth.js");
+const { revalidateToken } = require("./src/utils/verifyToken.js");
 
 dotenv.config();
 
+// Configurar o cookie-parser como middleware
+app.use(cookieParser());
 // Defina o basePath, por exemplo, '/api'
 const basePath = '/ec-api';
+
+// Middleware global para revalidação de token
+//app.use(revalidateToken);  poderia ser um outro midleware global qualquer
 
 mongoose.connect(process.env.MONGO_URL)
 .then(()=>{
@@ -23,20 +30,23 @@ mongoose.connect(process.env.MONGO_URL)
 
 })
 app.use(express.json());
+secureRoutes.use(express.json());
 
-router.get("/", (req,res)=>{
-    res.send("Base application")
-});
+
 
 //midleware
-app.use(basePath + "/users", userRouter);
+secureRoutes.use(revalidateToken);
+secureRoutes.use("/users", userRouter); // ja está com basebath implicitamente
+
+//midlewares de rotas nao seguras
 app.use(basePath + "/auth", authRouter);
 
 
 
-// Aplique o basePath às rotas
-//
-app.use(basePath, router);
+// Aplique o basePath às rotas seguras
+
+app.use(basePath, secureRoutes);
+
 
 
 

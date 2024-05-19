@@ -1,6 +1,9 @@
 const router = require("express").Router();
 const { json } = require("express");
 const jwt = require("jsonwebtoken");
+const CryptoJS = require("crypto-js");
+const { verifyToken, verifyTokenAndAuthorization } = require("../utils/verifyToken");
+const User = require("../models/User.js");
 
 router.get("/", (req, res) => {
   console.log("Test successful");
@@ -71,5 +74,59 @@ router.post("/userposttest",(req,res)=>{
     
 
 })
+
+router.put("/:id",verifyTokenAndAuthorization, async(req,res)=>{
+
+  console.log("passed by verify authorization")
+
+  if (req.body.password) {
+    req.body.password = CryptoJS.AES.encrypt(
+      req.body.password,
+      process.env.PASS_SECRET
+    ).toString();
+  }
+
+  console.log("Here")
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: req.body,
+      },
+      { new: true }
+    );
+console.log(updatedUser);
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    console.log("Ops", err.message)
+    res.status(500).json(err.message);
+  }
+
+});
+
+
+
+router.delete("/:id",verifyTokenAndAuthorization,async (req,res)=>{
+
+    try {
+
+      const existUser = await User.findById(req.params.id);
+
+      if(!existUser){
+        return res.status(404).send("User not found to delete!!")
+      }
+
+      await User.findByIdAndDelete(req.params.id)
+      res.status(204).json("User has been deleted")
+      
+    } catch (error) {
+      res.status(500).send("Error when deleting user!!" + error.message)
+    }
+
+});
+
+
 
 module.exports = router;

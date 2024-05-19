@@ -3,6 +3,8 @@ const User = require("../models/User.js");
 const router = require("express").Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
+const {verifyToken} = require("../utils/verifyToken.js");
+
 
 //REGISTER USER
 
@@ -27,38 +29,27 @@ router.post("/register", async (req, res) => {
 });
 
 //LOGIN
-
+// When Log in , inject the jwt on cookie
 router.post("/login", async (req, res) => {
-
-    console.log("login init .....")
+  
 
   const email = req.body.email;
-  const password = req.body.password;
+  const originalPassword = req.body.password;
 
-  console.log("Email", email)
-  console.log("Passord", password)
+ 
 
   try {
     const user = await User.findOne({ email: email });
-   
 
     if (!user) {
       return res.status(404).send("Usuário não encontrado");
     }
 
-   
-
     const bytes = CryptoJS.AES.decrypt(user.password, process.env.PASS_SECRET);
     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
 
-    console.log(user);
-    console.log("Hash da senha: ", password)
-    console.log("Senha decrypt: ", decryptedData)
-
-
-    if (password === decryptedData) {
+    if (originalPassword === decryptedData) {
       const token = jwt.sign(
-
         {
           userId: user._id,
           isAdmin: user.isAdmin,
@@ -72,17 +63,23 @@ router.post("/login", async (req, res) => {
       res.cookie("jwtToken", token, {
         maxAge: 3600000, // Tempo de vida do cookie em milissegundos (1 hora)
         httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
-      });
+      }).send("User logged in and token injected into a cookie");
 
-      console.log("quase!!")
-      res.send("User logged in!!");
+    
     } else {
-      
-      return res.status(401).send("Invalid password")
+      return res.status(401).send("Invalid password");
     }
   } catch (error) {
     res.send(error);
   }
 });
+
+router.get("/verifytoken",verifyToken,(req,res,next)=>{
+    res.send("Verified token")
+
+});
+
+
+
 
 module.exports = router;
