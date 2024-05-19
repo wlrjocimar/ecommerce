@@ -40,7 +40,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const user = await User.findOne({ email: email });
-    console.log(user)
+   
 
     if (!user) {
       return res.status(404).send("Usuário não encontrado");
@@ -77,7 +77,8 @@ router.post("/login", async (req, res) => {
       console.log("quase!!")
       res.send("User logged in!!");
     } else {
-      res.send("Invalid password");
+      
+      return res.status(401).send("Invalid password")
     }
   } catch (error) {
     res.send(error);
