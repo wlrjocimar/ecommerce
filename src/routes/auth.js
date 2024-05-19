@@ -39,12 +39,14 @@ router.post("/login", async (req, res) => {
       return res.status(404).send("Usuário não encontrado");
     }
 
+    console.log(user);
+
     const bytes = CryptoJS.AES.decrypt(user.password, process.env.PASS_SECRET);
     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
 
     if (password === decryptedData) {
       const token = jwt.sign(
-        
+
         {
           userId: user._id,
           isAdmin: user.isAdmin,
@@ -60,6 +62,7 @@ router.post("/login", async (req, res) => {
         httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
       });
 
+      console.log("quase!!")
       res.send("User logged in!!");
     } else {
       res.send("Invalid password");
