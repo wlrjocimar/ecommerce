@@ -26,7 +26,7 @@ router.get("/gerartoken", (req, res) => {
     httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
   });
 
-  res.status(200).json({ result: "ok" });
+  res.status(200).json({ result: "You are fake logged in for test!!" });
 });
 
 
