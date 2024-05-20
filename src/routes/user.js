@@ -135,12 +135,8 @@ router.get("/", verifyTokenAndAdmin, async (req, res) => {
 
 //GET USER STATS
 
-router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
-
-
+router.get("/stats", async (req, res) => {
   try {
-
-
     const date = new Date();
     const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
     const data = await User.aggregate([
@@ -158,14 +154,12 @@ router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
       },
     ]);
 
-
-
-    res.status(200).json(data)
+    res.status(200).json(data);
   } catch (err) {
-    console.log("Erro", err)
-
+    console.error("Erro", err);
     res.status(500).json(err.message);
   }
 });
+
 
 module.exports = router;
