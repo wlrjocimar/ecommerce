@@ -56,12 +56,12 @@ router.post("/login", async (req, res) => {
           data_criacao_utc: new Date(),
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1y" }
+        { expiresIn: "2h" }
       );
 
       // Adicionando o token JWT como um cookie na resposta
       res.cookie("jwtToken", token, {
-        maxAge: 3600000, // Tempo de vida do cookie em milissegundos (1 hora)
+        maxAge: 2 * 60 * 60 * 1000, // Tempo de vida do cookie em milissegundos (2 horaS)
         httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
       }).send("User logged in and token injected into a cookie in this domain");
 
