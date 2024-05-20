@@ -41,7 +41,7 @@ const revalidateToken = (req, res, next) => {
         // If the token is about to expire in less than 15 minutes
         if (timeLeft < 15 * 60) {
             const newToken = jwt.sign({ userId: data.userId, isAdmin: data.isAdmin }, process.env.JWT_SECRET, {
-                expiresIn: '1h'
+                expiresIn: '5h'
             });
             res.cookie('jwtToken', newToken, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
         }
