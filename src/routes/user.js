@@ -2,27 +2,31 @@ const router = require("express").Router();
 const { json } = require("express");
 const jwt = require("jsonwebtoken");
 const CryptoJS = require("crypto-js");
-const { verifyToken, verifyTokenAndAuthorization } = require("../utils/verifyToken");
+const {
+  verifyToken,
+  verifyTokenAndAuthorization,
+  verifyTokenAndAdmin,
+} = require("../utils/verifyToken");
 const User = require("../models/User.js");
 
-router.get("/", (req, res) => {
-  console.log("Test successful");
-  console.log("Headers received", req.headers);
+// router.get("/", (req, res) => {
+//   console.log("Test successful");
+//   console.log("Headers received", req.headers);
 
-  const token = jwt.sign(
-    { userId: "123", teste: "batata 2","data_criacao_utc":new Date() },
-    process.env.JWT_SECRET,
-    { expiresIn: "1h" }
-  );
+//   const token = jwt.sign(
+//     { userId: "123", teste: "batata 2", data_criacao_utc: new Date() },
+//     process.env.JWT_SECRET,
+//     { expiresIn: "1h" }
+//   );
 
-  // Adicionando o token JWT como um cookie na resposta
-  res.cookie("jwtToken", token, {
-    maxAge: 3600000, // Tempo de vida do cookie em milissegundos (1 hora)
-    httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
-  });
+//   // Adicionando o token JWT como um cookie na resposta
+//   res.cookie("jwtToken", token, {
+//     maxAge: 3600000, // Tempo de vida do cookie em milissegundos (1 hora)
+//     httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
+//   });
 
-  res.status(200).json({ result: "ok" });
-});
+//   res.status(200).json({ result: "ok" });
+// });
 
 router.get("/test", (req, res) => {
   // Extrair o token do cookie
@@ -63,21 +67,14 @@ router.get("/test", (req, res) => {
   }
 });
 
+router.post("/userposttest", (req, res) => {
+  console.log(req.body.username);
 
+  res.send(req.body.username);
+});
 
-router.post("/userposttest",(req,res)=>{
-
-    console.log(req.body.username)
-
-    res.send(req.body.username);
-
-    
-
-})
-
-router.put("/:id",verifyTokenAndAuthorization, async(req,res)=>{
-
-  console.log("passed by verify authorization")
+router.put("/:id", verifyTokenAndAuthorization, async (req, res) => {
+  console.log("passed by verify authorization");
 
   if (req.body.password) {
     req.body.password = CryptoJS.AES.encrypt(
@@ -86,7 +83,7 @@ router.put("/:id",verifyTokenAndAuthorization, async(req,res)=>{
     ).toString();
   }
 
-  console.log("Here")
+  console.log("Here");
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
@@ -96,37 +93,96 @@ router.put("/:id",verifyTokenAndAuthorization, async(req,res)=>{
       },
       { new: true }
     );
-console.log(updatedUser);
+    console.log(updatedUser);
 
     res.status(200).json(updatedUser);
   } catch (err) {
-    console.log("Ops", err.message)
+    console.log("Ops", err.message);
     res.status(500).json(err.message);
   }
-
 });
 
+router.delete("/:id", verifyTokenAndAuthorization, async (req, res) => {
+  try {
+    const existUser = await User.findById(req.params.id);
 
-
-router.delete("/:id",verifyTokenAndAuthorization,async (req,res)=>{
-
-    try {
-
-      const existUser = await User.findById(req.params.id);
-
-      if(!existUser){
-        return res.status(404).send("User not found to delete!!")
-      }
-
-      await User.findByIdAndDelete(req.params.id)
-      res.status(204).json("User has been deleted")
-      
-    } catch (error) {
-      res.status(500).send("Error when deleting user!!" + error.message)
+    if (!existUser) {
+      return res.status(404).send("User not found to delete!!");
     }
 
+    await User.findByIdAndDelete(req.params.id);
+    res.status(204).json("User has been deleted");
+  } catch (error) {
+    res.status(500).send("Error when deleting user!!" + error.message);
+  }
+});
+
+router.get("/:id", verifyTokenAndAdmin, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    const { password, ...others } = user._doc;
+
+    res.status(200).send(others);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+});
+
+router.get("/", verifyTokenAndAdmin, async (req, res) => {
+
+  const query = req.query.new;
+  console.log(query)
+
+  try {
+    const users = query ? await User.find().sort({ _id: -1 }).limit(1) : await User.find();
+    //const { password, ...others } = user._doc;
+
+    const usersWithoutPassord = users.map((user) => {
+      const { password, ...userWhithoutPassord } = user._doc;
+      return userWhithoutPassord;
+    });
+
+    res.status(200).send(usersWithoutPassord);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 
+
+//GET USER STATS
+
+router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
+
+
+  try {
+
+
+    const date = new Date();
+    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+    const data = await User.aggregate([
+      { $match: { createdAt: { $gte: lastYear } } },
+      {
+        $project: {
+          month: { $month: "$createdAt" },
+        },
+      },
+      {
+        $group: {
+          _id: "$month",
+          total: { $sum: 1 },
+        },
+      },
+    ]);
+
+
+
+    res.status(200).json(data)
+  } catch (err) {
+    console.log("Erro", err)
+
+    res.status(500).json(err.message);
+  }
+});
 
 module.exports = router;
