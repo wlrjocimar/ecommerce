@@ -15,14 +15,14 @@ router.get("/gerartoken", (req, res) => {
   console.log("Headers received", req.headers);
 
   const token = jwt.sign(
-    { userId: "123", teste: "batata 2", data_criacao_utc: new Date() },
+    { userId: "664a601ed6f1b9b51d308573", isAdmin:true,data_criacao_utc: new Date() },
     process.env.JWT_SECRET,
-    { expiresIn: "1h" }
+    { expiresIn: "2h" }
   );
 
   // Adicionando o token JWT como um cookie na resposta
   res.cookie("jwtToken", token, {
-    maxAge: 3600000, // Tempo de vida do cookie em milissegundos (1 hora)
+    maxAge: 2 * 60 * 60 * 1000, // Tempo de vida do cookie em milissegundos (2 horaS)
     httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
   });
 
