@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Processar Pagamento</title>
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+  <form id="payment-form">
+    <div>
+      <label for="card-element">
+        Informações do Cartão
+      </label>
+      <div id="card-element">
+        <!-- Elemento do cartão do Stripe -->
+      </div>
+
+      <!-- Usado para exibir mensagens de erro -->
+      <div id="card-errors" role="alert"></div>
+    </div>
+
+    <div>
+      <label for="amount">
+        Valor do Pagamento
+      </label>
+      <input type="text" id="amount" name="amount" placeholder="Digite o valor do pagamento (ex: 10.50)">
+    </div>
+
+    <button type="submit">Enviar Pagamento</button>
+  </form>
+
+  <script>
+    // Configure o Stripe.js com sua chave pública
+    var stripe = Stripe('pk_test_51PIg3ZCg1Iux5iLxYB19CqFSEmkEBhRqbipX5vUN1Uc2qhfREDMi8J1lT4d7XZr5Tp8wC8e60i0RG3GlqER11wsY00NmtgScBV');
+
+    // Crie um elemento do cartão do Stripe
+    var elements = stripe.elements();
+    var cardElement = elements.create('card');
+
+    // Adicione o elemento do cartão ao formulário
+    cardElement.mount('#card-element');
+
+    // Manipulador de envio do formulário
+    var form = document.getElementById('payment-form');
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      // Aqui você pode obter o valor do pagamento do seu formulário
+      var amount = document.getElementById('amount').value;
+
+      // Crie um token do cartão usando Stripe.js
+      stripe.createToken(cardElement).then(function(result) {
+        if (result.error) {
+          // Exiba mensagens de erro para o usuário
+          var errorElement = document.getElementById('card-errors');
+          errorElement.textContent = result.error.message;
+        } else {
+          // Envie o token e o valor para seu servidor
+          fetch('/ec-api/stripe/payment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+              stripeToken: result.token.id,
+              valor: amount // Adicionando o valor ao objeto JSON enviado para o backend
+            })
+          })
+          .then(response => response.json())
+          .then(data => {
+            alert(data.message); // Exibe mensagem de retorno do servidor
+          })
+          .catch(error => {
+            console.error('Erro:', error);
+            alert('Ocorreu um erro ao processar o pagamento.'); // Exibe um alerta em caso de erro
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

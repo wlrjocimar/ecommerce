@@ -15,6 +15,14 @@ const stripeRouter = require("./src/routes/stripe.js");
 const { revalidateToken } = require("./src/utils/verifyToken.js");
 
 dotenv.config();
+app.use(express.static('public'))
+
+// Rota para servir o arquivo HTML
+secureRoutes.get('/stripe', function(req, res) {
+    // Não é necessário renderizar nada, apenas enviar o arquivo HTML como resposta
+    res.sendFile(__dirname +  '/public/index.html');
+});
+
 
 // Configurar o cookie-parser como middleware
 app.use(cookieParser());
