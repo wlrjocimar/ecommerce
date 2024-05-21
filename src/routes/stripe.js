@@ -13,12 +13,14 @@ router.post('/payment', async (req, res) => {
       source: token,
       description: 'Descrição do pagamento',
     });
+
+    console.log(pagamento.receipt_url);
     
     // Sucesso
-    res.status(200).send('Pagamento processado com sucesso!');
+    res.status(200).json({receiptPayment:pagamento.receipt_url} );
   } catch (error) {
     // Erro
-    res.status(500).send('Erro ao processar o pagamento: ' + error.message);
+    res.status(500).json('Erro ao processar o pagamento: ' + error.message);
   }
 });
 
