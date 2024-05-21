@@ -9,20 +9,26 @@ router.post('/payment', async (req, res) => {
   try {
     const pagamento = await stripe.charges.create({
       amount: valor * 100,
-      currency: 'brl', // Altere para a moeda desejada
+      currency: 'brl',
       source: token,
       description: 'Descrição do pagamento',
     });
 
-    console.log(pagamento.receipt_url);
-    
-    // Sucesso
-    res.status(200).json({receiptPayment:pagamento.receipt_url} );
+    // Verifica se o pagamento foi bem-sucedido
+    if (pagamento.status === 'succeeded') {
+      console.log(pagamento.receipt_url);
+      // Sucesso
+      return res.status(200).json({ receiptPayment: pagamento.receipt_url });
+    } else {
+      // Se o pagamento não for bem-sucedido, lança um erro
+      throw new Error('O pagamento não foi bem-sucedido.');
+    }
   } catch (error) {
     // Erro
-    res.status(500).json('Erro ao processar o pagamento: ' + error.message);
+    return res.status(500).json('Erro ao processar o pagamento: ' + error.message);
   }
 });
+
 
 
 

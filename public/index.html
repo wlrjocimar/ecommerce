@@ -78,7 +78,12 @@ form.addEventListener('submit', function(event) {
       .then(data => {
         console.log(data);
         // Redirecionar para a URL fornecida pelo servidor após um pagamento bem-sucedido
-        window.location.href = data.receiptPayment;
+        if(data.receiptPayment!=undefined){
+          window.location.href = data.receiptPayment;
+        }else{
+          alert('Ocorreu um erro ao processar o pagamento.' + JSON.stringify(data)); // Exibe um alerta em caso de erro
+        }
+        
       })
       .catch(error => {
         console.error('Erro:', error);
