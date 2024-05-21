@@ -7,7 +7,7 @@ const {
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
 } = require("../utils/verifyToken");
-const User = require("../models/User.js");
+const User = require("../models/User");
 
 
 
@@ -114,7 +114,7 @@ router.get("/:id", verifyTokenAndAdmin, async (req, res) => {
 router.get("/", verifyTokenAndAdmin, async (req, res) => {
 
   const query = req.query.new;
-  console.log(query)
+ 
 
   try {
     const users = query ? await User.find().sort({ _id: -1 }).limit(1) : await User.find();
@@ -135,10 +135,11 @@ router.get("/", verifyTokenAndAdmin, async (req, res) => {
 
 //GET USER STATS
 
-router.get("/stats", async (req, res) => {
+router.get("/stats", verifyTokenAndAdmin, async (req, res) => {
+  const date = new Date();
+  const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+
   try {
-    const date = new Date();
-    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
     const data = await User.aggregate([
       { $match: { createdAt: { $gte: lastYear } } },
       {
@@ -153,11 +154,9 @@ router.get("/stats", async (req, res) => {
         },
       },
     ]);
-
-    res.status(200).json(data);
+    res.status(200).json(data)
   } catch (err) {
-    console.error("Erro", err);
-    res.status(500).json(err.message);
+    res.status(500).json(err);
   }
 });
 

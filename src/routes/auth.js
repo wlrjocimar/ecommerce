@@ -11,8 +11,7 @@ const {verifyToken} = require("../utils/verifyToken.js");
 
 
 router.get("/gerartoken", (req, res) => {
-  console.log("Test successful");
-  console.log("Headers received", req.headers);
+  
 
   const token = jwt.sign(
     { userId: "664a601ed6f1b9b51d308573", isAdmin:true,data_criacao_utc: new Date() },
@@ -34,7 +33,7 @@ router.get("/gerartoken", (req, res) => {
 //REGISTER USER
 
 router.post("/register", async (req, res) => {
-  console.log("chequei no register");
+  
 
   const newUser = new User({
     username: req.body.username,
