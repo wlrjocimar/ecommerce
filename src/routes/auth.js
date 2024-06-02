@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const { verifyToken } = require("../utils/verifyToken.js");
 
 // Middleware para lidar com dados codificados de formulário
-router.use(express.urlencoded({ extended: true }));
+router.use( require("express").urlencoded({ extended: true }));
 
 //GERAR TOKEN DE TESTE
 router.get("/gerartoken", (req, res) => {
