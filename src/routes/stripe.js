@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const stripe = require('stripe')('sk_test_51PIg3ZCg1Iux5iLxH4F1mpAZP2uWsm8MrGk2jqUEvIbfqUFiFQ0OW3XwzFzwuYji4Mz9wD3qA8RybYq34Ppvc0hJ00MKJXtWvG');
 
+const dotenv = require("dotenv");
+dotenv.config();
+const stripe = require('stripe')(process.env.STRIPE_KEY);
 router.post('/payment', async (req, res) => {
   const token = req.body.stripeToken;
   const valor = req.body.valor;

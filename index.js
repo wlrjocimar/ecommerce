@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const jwt = require('jsonwebtoken');
 const secureRoutes  = express.Router();
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const userRouter = require("./src/routes/user.js")
 const authRouter = require("./src/routes/auth.js");
@@ -15,6 +16,10 @@ const stripeRouter = require("./src/routes/stripe.js");
 const { revalidateToken } = require("./src/utils/verifyToken.js");
 
 dotenv.config();
+
+// Permitir todas as origens
+app.use(cors());
+
 app.use(express.static('public'))
 
 // Rota para servir o arquivo HTML
