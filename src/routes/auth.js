@@ -1,40 +1,31 @@
 const User = require("../models/User.js");
-
 const router = require("express").Router();
 const CryptoJS = require("crypto-js");
 const jwt = require("jsonwebtoken");
-const {verifyToken} = require("../utils/verifyToken.js");
+const { verifyToken } = require("../utils/verifyToken.js");
 
-
+// Middleware para lidar com dados codificados de formulário
+router.use(express.urlencoded({ extended: true }));
 
 //GERAR TOKEN DE TESTE
-
-
 router.get("/gerartoken", (req, res) => {
-  
-
   const token = jwt.sign(
-    { userId: "664a601ed6f1b9b51d308573", isAdmin:true,data_criacao_utc: new Date() },
+    { userId: "664a601ed6f1b9b51d308573", isAdmin: true, data_criacao_utc: new Date() },
     process.env.JWT_SECRET,
     { expiresIn: "2h" }
   );
 
   // Adicionando o token JWT como um cookie na resposta
   res.cookie("jwtToken", token, {
-    maxAge: 2 * 60 * 60 * 1000, // Tempo de vida do cookie em milissegundos (2 horaS)
+    maxAge: 2 * 60 * 60 * 1000, // Tempo de vida do cookie em milissegundos (2 horas)
     httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
   });
 
   res.status(200).json({ result: "You are fake logged in for test!!" });
 });
 
-
-
 //REGISTER USER
-
 router.post("/register", async (req, res) => {
-  
-
   const newUser = new User({
     username: req.body.username,
     email: req.body.email,
@@ -55,12 +46,8 @@ router.post("/register", async (req, res) => {
 //LOGIN
 // When Log in , inject the jwt on cookie
 router.post("/login", async (req, res) => {
-  
-
   const email = req.body.email;
   const originalPassword = req.body.password;
-
- 
 
   try {
     const user = await User.findOne({ email: email });
@@ -85,11 +72,9 @@ router.post("/login", async (req, res) => {
 
       // Adicionando o token JWT como um cookie na resposta
       res.cookie("jwtToken", token, {
-        maxAge: 2 * 60 * 60 * 1000, // Tempo de vida do cookie em milissegundos (2 horaS)
+        maxAge: 2 * 60 * 60 * 1000, // Tempo de vida do cookie em milissegundos (2 horas)
         httpOnly: true, // Define se o cookie é acessível apenas pelo servidor
       }).send("User logged in and token injected into a cookie in this domain");
-
-    
     } else {
       return res.status(401).send("Invalid password");
     }
@@ -98,12 +83,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/verifytoken",verifyToken,(req,res,next)=>{
-    res.send("Verified token")
-
+router.get("/verifytoken", verifyToken, (req, res, next) => {
+  res.send("Verified token");
 });
-
-
-
 
 module.exports = router;
