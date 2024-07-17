@@ -55,6 +55,7 @@ router.post("/login", async (req, res) => {
     if (!user) {
       return res.status(404).send("Usuário não encontrado");
     }
+    
 
     const bytes = CryptoJS.AES.decrypt(user.password, process.env.PASS_SECRET);
     const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
