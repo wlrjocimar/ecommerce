@@ -8,6 +8,7 @@ router.post('/payment', async (req, res) => {
   const token = req.body.stripeToken;
   const valor = req.body.valor;
   
+  
   try {
     const pagamento = await stripe.charges.create({
       amount: valor * 100,
