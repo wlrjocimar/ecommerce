@@ -1,101 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Processar Pagamento</title>
+  <link rel="stylesheet" href="./css/styles.css">
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-  <form id="payment-form">
-    <div>
-      <label for="card-element">
-        Informações do Cartão
-      </label>
-      <div id="card-element">
-        <!-- Elemento do cartão do Stripe -->
+  <div class="container">
+    <h1>Processar Pagamento</h1>
+    <form id="payment-form">
+      <div class="form-group">
+        <label for="card-element">Informações do Cartão</label>
+        <div id="card-element" class="card-element">
+          <!-- Elemento do cartão do Stripe -->
+        </div>
+        <div id="card-errors" role="alert" class="error-message"></div>
       </div>
+      <div class="form-group">
+        <label for="amount">Valor do Pagamento</label>
+        <input type="text" id="amount" name="amount" placeholder="Digite o valor do pagamento (ex: 10.50)">
+      </div>
+      <button type="submit" id="submit-button">Enviar Pagamento</button>
+    </form>
+  </div>
 
-      <!-- Usado para exibir mensagens de erro -->
-      <div id="card-errors" role="alert"></div>
-    </div>
-
-    <div>
-      <label for="amount">
-        Valor do Pagamento
-      </label>
-      <input type="text" id="amount" name="amount" placeholder="Digite o valor do pagamento (ex: 10.50)">
-    </div>
-
-    <button type="submit">Enviar Pagamento</button>
-  </form>
-
-  <script>
-    // Configure o Stripe.js com sua chave pública
-    var stripe = Stripe('pk_test_51PIg3ZCg1Iux5iLxYB19CqFSEmkEBhRqbipX5vUN1Uc2qhfREDMi8J1lT4d7XZr5Tp8wC8e60i0RG3GlqER11wsY00NmtgScBV');
-
-    // Crie um elemento do cartão do Stripe
-    var elements = stripe.elements();
-    var cardElement = elements.create('card');
-
-    // Adicione o elemento do cartão ao formulário
-    cardElement.mount('#card-element');
-
-    // Manipulador de envio do formulário
-    // Manipulador de envio do formulário
-var form = document.getElementById('payment-form');
-form.addEventListener('submit', function(event) {
-  event.preventDefault();
-  
-  // Desabilitar o botão de envio para evitar reenvios
-  form.querySelector('button[type="submit"]').disabled = true;
-
-  // Aqui você pode obter o valor do pagamento do seu formulário
-  var amount = document.getElementById('amount').value;
-
-  // Crie um token do cartão usando Stripe.js
-  stripe.createToken(cardElement).then(function(result) {
-    if (result.error) {
-      // Exiba mensagens de erro para o usuário
-      var errorElement = document.getElementById('card-errors');
-      errorElement.textContent = result.error.message;
-
-      // Habilitar o botão de envio novamente em caso de erro
-      form.querySelector('button[type="submit"]').disabled = false;
-    } else {
-      // Envie o token e o valor para seu servidor
-      fetch('/ec-api/stripe/payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          stripeToken: result.token.id,
-          valor: amount // Adicionando o valor ao objeto JSON enviado para o backend
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        // Redirecionar para a URL fornecida pelo servidor após um pagamento bem-sucedido
-        if(data.receiptPayment!=undefined){
-          window.location.href = data.receiptPayment;
-        }else{
-          alert('Ocorreu um erro ao processar o pagamento.' + JSON.stringify(data)); // Exibe um alerta em caso de erro
-        }
-        
-      })
-      .catch(error => {
-        console.error('Erro:', error);
-        alert('Ocorreu um erro ao processar o pagamento.' + error); // Exibe um alerta em caso de erro
-
-        // Habilitar o botão de envio novamente em caso de erro
-        form.querySelector('button[type="submit"]').disabled = false;
-      });
-    }
-  });
-});
-
-  </script>
+  <script src="./js/script.js"></script>
 </body>
 </html>

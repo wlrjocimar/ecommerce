@@ -3,9 +3,12 @@ const app = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const jwt = require('jsonwebtoken');
+const unsecurityRoutes  = express.Router();
 const secureRoutes  = express.Router();
+
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const path = require('path');
 
 const userRouter = require("./src/routes/user.js")
 const authRouter = require("./src/routes/auth.js");
@@ -21,9 +24,12 @@ dotenv.config();
 app.use(cors());
 
 app.use(express.static('public'))
+// Servir arquivos estáticos
+app.use('/ec-api/css', express.static(path.join(__dirname, 'public/css')));
+app.use('/ec-api/js', express.static(path.join(__dirname, 'public/js')));
 
 // Rota para servir o arquivo HTML
-secureRoutes.get('/stripe', function(req, res) {
+unsecurityRoutes.get('/stripe', function(req, res) {
     // Não é necessário renderizar nada, apenas enviar o arquivo HTML como resposta
     res.sendFile(__dirname +  '/public/index.html');
 });
@@ -48,16 +54,17 @@ mongoose.connect(process.env.MONGO_URL)
 })
 app.use(express.json());
 secureRoutes.use(express.json());
+unsecurityRoutes.use(express.json());
 
 
 
 //midleware
-secureRoutes.use(revalidateToken);
+//secureRoutes.use(revalidateToken);
 secureRoutes.use("/users", userRouter); // ja está com basebath implicitamente
 secureRoutes.use("/products", productRouter); // ja está com basebath implicitamente
 secureRoutes.use("/carts", cartRouter); // ja está com basebath implicitamente
 secureRoutes.use("/orders", orderRouter); // ja está com basebath implicitamente
-secureRoutes.use("/stripe", stripeRouter); // ja está com basebath implicitamente
+unsecurityRoutes.use("/stripe", stripeRouter); // ja está com basebath implicitamente
 
 //midlewares de rotas nao seguras
 app.use(basePath + "/auth", authRouter);
@@ -67,6 +74,7 @@ app.use(basePath + "/auth", authRouter);
 // Aplique o basePath às rotas seguras
 
 app.use(basePath, secureRoutes);
+app.use(basePath, unsecurityRoutes);
 
 
 
