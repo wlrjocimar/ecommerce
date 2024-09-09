@@ -6,6 +6,8 @@
   <title>Processar Pagamento</title>
   <link rel="stylesheet" href="./css/styles.css">
   <script src="https://js.stripe.com/v3/"></script>
+  <!-- Update the URLs based on availability -->
+  <script src="https://cdn.jsdelivr.net/npm/cleave.js@latest/dist/cleave.min.js"></script>
 </head>
 <body>
   <div class="container">
@@ -20,7 +22,7 @@
       </div>
       <div class="form-group">
         <label for="amount">Valor do Pagamento</label>
-        <input type="text" id="amount" name="amount" placeholder="Digite o valor do pagamento (ex: 10.50)">
+        <input type="text" id="amount" name="amount" placeholder="Digite o valor do pagamento (ex: 10,50)">
       </div>
       <button type="submit" id="submit-button">Enviar Pagamento</button>
     </form>
