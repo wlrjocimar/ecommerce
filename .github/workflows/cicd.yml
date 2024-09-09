@@ -30,5 +30,6 @@ jobs:
           cd /dados/webapps/ecommerce
 
          
+          cd /
           ls
         EOF
