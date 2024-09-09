@@ -30,6 +30,7 @@ jobs:
           cd /dados/webapps/ecommerce
 
          
-          cd /
-          ls
+          
+          npm install
+
         EOF
