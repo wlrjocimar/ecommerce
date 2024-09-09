@@ -71,6 +71,7 @@ app.use(basePath + "/auth", authRouter);
 
 
 
+
 // Aplique o basePath às rotas seguras
 
 app.use(basePath, secureRoutes);
