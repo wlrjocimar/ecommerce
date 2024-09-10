@@ -3,35 +3,56 @@ document.addEventListener('DOMContentLoaded', function () {
     var elements = stripe.elements();
     var cardElement = elements.create('card');
     const input = document.getElementById('amount');
+    
+    input.addEventListener('input', formatCurrency);
 
 
 
 
     cardElement.mount('#card-element');
 
-    input.addEventListener('input', formatCurrency);
-
+   
     function formatCurrency(event) {
         let value = event.target.value;
-        
-        // Remove all caracteres que não sejam dígitos ou vírgulas
-        value = value.replace(/[^\d,]/g, '');
+        console.log(value)
+    
+       // Remove todos os caracteres que não sejam dígitos
+       value = value.replace(/\D/g, '');
 
-        // Substituir vírgulas por pontos para usar o padrão de ponto flutuante
-        value = value.replace(',', '.');
+       
+
+
+
+        // Adiciona uma vírgula na penúltima posição
+        if (value.length >= 3) {
+            value = value.slice(0, -2) + ',' + value.slice(-2); 
+        }
         
-        // Adiciona o formato de moeda
-        const [integer, decimal] = value.split('.');
-        
-        // Separa os inteiros em grupos de 3 dígitos
-        const integerPart = integer ? parseInt(integer, 10).toLocaleString('pt-BR') : '0';
-        
-        // Adiciona os centavos com duas casas decimais
-        const decimalPart = decimal ? decimal.substring(0, 2) : '00';
-        
-        // Construa o valor formatado
-        event.target.value = `R$ ${integerPart},${decimalPart}`;
+    
+        // Substitui a última vírgula por um ponto para tratar a parte decimal
+        const [integer, decimal] = value.split(',');
+    
+        // Se a parte decimal não existir, define-a como uma string vazia
+        const integerPart = integer || '';
+        const decimalPart = decimal !== undefined ? decimal.substring(0, 2) : '';
+    
+        // Adiciona pontos como separadores de milhar
+        const formattedIntegerPart = integerPart
+            .split('')
+            .reverse()
+            .reduce((acc, char, index) => {
+                return (index % 3 === 0 && index !== 0 ? `${char}.` : char) + acc;
+            }, '');
+    
+        // Remove o ponto extra na frente
+        const finalIntegerPart = formattedIntegerPart.replace(/^\./, '');
+    
+        // Formata o valor final
+        event.target.value = `R$ ${finalIntegerPart}${decimalPart ? ',' + decimalPart : ''}`;
     }
+    
+
+ 
 
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
@@ -79,11 +100,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     function formatAmountForSubmission(amount) {
+        
+        // Remove todos os caracteres que não sejam dígitos
+        amount = amount.replace(/\D/g, '');
         // Remove os pontos e substitui a vírgula por ponto
-        let cleanedAmount = amount.replace(/\./g, '').replace(',', '.');
+
+        if(amount.length >= 3){
+            amount = amount.slice(0, -2) + '.' + amount.slice(-2); 
+        } 
+      
+    
+        
         
         // Converte para número flutuante
-        let number = parseFloat(cleanedAmount);
+        let number = parseFloat(amount);
         
         // Retorna o valor numérico em formato de string para ser enviado
         return number.toFixed(2); // Mantém 2 casas decimais
