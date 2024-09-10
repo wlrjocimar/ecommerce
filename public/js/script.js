@@ -2,18 +2,36 @@ document.addEventListener('DOMContentLoaded', function () {
     var stripe = Stripe('pk_test_51PIg3ZCg1Iux5iLxYB19CqFSEmkEBhRqbipX5vUN1Uc2qhfREDMi8J1lT4d7XZr5Tp8wC8e60i0RG3GlqER11wsY00NmtgScBV');
     var elements = stripe.elements();
     var cardElement = elements.create('card');
+    const input = document.getElementById('amount');
+
+
+
 
     cardElement.mount('#card-element');
 
-    // Inicialize Cleave.js para o input de valor com a formatação brasileira
-    var cleave = new Cleave('#amount', {
-        numeral: true,
-        numeralThousandsGroupStyle: 'thousand',
-        numeralDecimalMark: ',',
-        delimiter: '.',
-        numeralDecimalScale: 2,
-        numeralIntegerScale: 16 // Permite até 16 dígitos antes da vírgula
-    });
+    input.addEventListener('input', formatCurrency);
+
+    function formatCurrency(event) {
+        let value = event.target.value;
+        
+        // Remove all caracteres que não sejam dígitos ou vírgulas
+        value = value.replace(/[^\d,]/g, '');
+
+        // Substituir vírgulas por pontos para usar o padrão de ponto flutuante
+        value = value.replace(',', '.');
+        
+        // Adiciona o formato de moeda
+        const [integer, decimal] = value.split('.');
+        
+        // Separa os inteiros em grupos de 3 dígitos
+        const integerPart = integer ? parseInt(integer, 10).toLocaleString('pt-BR') : '0';
+        
+        // Adiciona os centavos com duas casas decimais
+        const decimalPart = decimal ? decimal.substring(0, 2) : '00';
+        
+        // Construa o valor formatado
+        event.target.value = `R$ ${integerPart},${decimalPart}`;
+    }
 
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
@@ -58,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
-    
+
 
     function formatAmountForSubmission(amount) {
         // Remove os pontos e substitui a vírgula por ponto
