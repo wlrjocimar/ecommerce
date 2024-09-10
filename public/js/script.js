@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         
         
+        
         // Converte para número flutuante
         let number = parseFloat(amount);
         
