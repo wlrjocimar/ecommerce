@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+    
 
     function formatAmountForSubmission(amount) {
         // Remove os pontos e substitui a vírgula por ponto
