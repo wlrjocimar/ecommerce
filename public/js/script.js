@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var elements = stripe.elements();
     var cardElement = elements.create('card');
     const input = document.getElementById('amount');
+    input.value='';
     
     input.addEventListener('input', formatCurrency);
 
@@ -111,7 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
       
     
         
-        
+
         
         // Converte para número flutuante
         let number = parseFloat(amount);
