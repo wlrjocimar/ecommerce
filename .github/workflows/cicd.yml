@@ -64,5 +64,5 @@ jobs:
           # Adicionar o caminho do npm ao PATH e continuar com o deploy
           export PATH=/usr/local/nodejs/bin:$PATH
           
-          npm install && pm2 restart ec-api
+          git pull && npm install && pm2 restart ec-api
         EOF
