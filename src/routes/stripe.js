@@ -4,6 +4,9 @@ const router = express.Router();
 const dotenv = require("dotenv");
 dotenv.config();
 const stripe = require('stripe')(process.env.STRIPE_KEY);
+
+
+
 router.post('/payment', async (req, res) => {
   const token = req.body.stripeToken;
   const valor = req.body.valor;

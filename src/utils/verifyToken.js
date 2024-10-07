@@ -17,6 +17,35 @@ const verifyToken = (req, res, next) => {
     }
 };
 
+const verifyTokenSisum = (req, res, next) => {
+    const token = req.cookies["sisum_access_token"];
+    
+    if (token) {
+        // Decodifica o token para acessar o payload
+        const decoded = jwt.decode(token, { complete: true });
+        if (!decoded || !decoded.payload.publicKey) {
+            return res.status(403).json("Token is not valid");
+        }
+
+        const publicKey = decoded.payload.publicKey; // Obter a chave pública do payload
+
+        // Verifica o token usando a chave pública
+        jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (error, data) => {
+            if (error) {
+                console.error("Erro na verificação do token: ", error);
+                return res.status(403).json("Token is not valid");
+            }
+
+            req.user = data; // Armazena os dados do usuário na requisição
+            next();
+        });
+    } else {
+        return res.status(401).json("You are not authenticated!!");
+    }
+};
+
+
+
 const verifyTokenAndAuthorization = (req, res, next) => {
     verifyToken(req, res, () => {
         if (req.user.userId === req.params.id || req.user.isAdmin) {
@@ -66,4 +95,4 @@ const verifyTokenAndAdmin = (req, res, next) => {
     });
   };
 
-module.exports = { verifyToken, verifyTokenAndAuthorization, revalidateToken,verifyTokenAndAdmin };
+module.exports = { verifyTokenSisum,verifyToken, verifyTokenAndAuthorization, revalidateToken,verifyTokenAndAdmin };

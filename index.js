@@ -16,6 +16,7 @@ const productRouter = require("./src/routes/product.js");
 const cartRouter = require("./src/routes/cart.js");
 const orderRouter = require("./src/routes/order.js");
 const stripeRouter = require("./src/routes/stripe.js");
+const testeRouter = require("./src/routes/teste.js");
 const { revalidateToken } = require("./src/utils/verifyToken.js");
 
 dotenv.config();
@@ -64,6 +65,7 @@ secureRoutes.use("/users", userRouter); // ja está com basebath implicitamente
 secureRoutes.use("/products", productRouter); // ja está com basebath implicitamente
 secureRoutes.use("/carts", cartRouter); // ja está com basebath implicitamente
 secureRoutes.use("/orders", orderRouter); // ja está com basebath implicitamente
+unsecurityRoutes.use("/teste", testeRouter); 
 unsecurityRoutes.use("/stripe", stripeRouter); // ja está com basebath implicitamente
 
 //midlewares de rotas nao seguras

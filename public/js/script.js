@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var stripe = Stripe('pk_test_51PIg3ZCg1Iux5iLxYB19CqFSEmkEBhRqbipX5vUN1Uc2qhfREDMi8J1lT4d7XZr5Tp8wC8e60i0RG3GlqER11wsY00NmtgScBV');
+    var stripe = Stripe('pk_live_51PIg3ZCg1Iux5iLxyB95A9BI4ARq2W66rRcvmWjXfehPM0HgIoGbtx9oh7OIrbdVonOZFur1kisNVoW2sa928vO600sxx9DlNL');
     var elements = stripe.elements();
     var cardElement = elements.create('card');
     const input = document.getElementById('amount');
