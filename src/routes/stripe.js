@@ -57,6 +57,9 @@ router.post('/payment', async (req, res) => {
       }
     });
 
+    
+
+
     // Criação e confirmação do PaymentIntent
     const pagamento = await stripe.paymentIntents.create({
       amount: amount * 100, // Valor em centavos
