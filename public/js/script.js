@@ -3,57 +3,35 @@ document.addEventListener('DOMContentLoaded', function () {
     var elements = stripe.elements();
     var cardElement = elements.create('card');
     const input = document.getElementById('amount');
-    input.value='';
-    
+    input.value = '';
+
     input.addEventListener('input', formatCurrency);
-
-
-
 
     cardElement.mount('#card-element');
 
-   
     function formatCurrency(event) {
         let value = event.target.value;
-        console.log(value)
-    
-       // Remove todos os caracteres que não sejam dígitos
-       value = value.replace(/\D/g, '');
+        value = value.replace(/\D/g, '');
 
-       
-
-
-
-        // Adiciona uma vírgula na penúltima posição
         if (value.length >= 3) {
-            value = value.slice(0, -2) + ',' + value.slice(-2); 
+            value = value.slice(0, -2) + ',' + value.slice(-2);
         }
-        
-    
-        // Substitui a última vírgula por um ponto para tratar a parte decimal
+
         const [integer, decimal] = value.split(',');
-    
-        // Se a parte decimal não existir, define-a como uma string vazia
         const integerPart = integer || '';
         const decimalPart = decimal !== undefined ? decimal.substring(0, 2) : '';
-    
-        // Adiciona pontos como separadores de milhar
+
         const formattedIntegerPart = integerPart
             .split('')
             .reverse()
             .reduce((acc, char, index) => {
                 return (index % 3 === 0 && index !== 0 ? `${char}.` : char) + acc;
             }, '');
-    
-        // Remove o ponto extra na frente
+
         const finalIntegerPart = formattedIntegerPart.replace(/^\./, '');
-    
-        // Formata o valor final
+
         event.target.value = `R$ ${finalIntegerPart}${decimalPart ? ',' + decimalPart : ''}`;
     }
-    
-
- 
 
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
@@ -63,8 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
         submitButton.disabled = true;
 
         var amount = document.getElementById('amount').value;
+        var name = document.getElementById('name').value; // Novo campo
+        var phone = document.getElementById('phone').value; // Novo campo
+        var email = document.getElementById('email').value; // Novo campo
+        var address = document.getElementById('address').value; // Novo campo
 
-        // Extraia o valor numérico sem a formatação
         var amountNumeric = formatAmountForSubmission(amount);
 
         stripe.createToken(cardElement).then(function (result) {
@@ -79,7 +60,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     },
                     body: JSON.stringify({ 
                         stripeToken: result.token.id,
-                        valor: amountNumeric
+                        amount: amountNumeric,
+                        name: name, // Enviando o nome
+                        phone: phone, // Enviando o telefone
+                        email: email, // Enviando o e-mail
+                        address: address // Enviando o endereço
                     })
                 })
                 .then(response => response.json())
@@ -99,25 +84,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-
     function formatAmountForSubmission(amount) {
-        
-        // Remove todos os caracteres que não sejam dígitos
         amount = amount.replace(/\D/g, '');
-        // Remove os pontos e substitui a vírgula por ponto
-
-        if(amount.length >= 3){
+        if (amount.length >= 3) {
             amount = amount.slice(0, -2) + '.' + amount.slice(-2); 
-        } 
-      
-    
-        
-
-        
-        // Converte para número flutuante
+        }
         let number = parseFloat(amount);
-        
-        // Retorna o valor numérico em formato de string para ser enviado
-        return number.toFixed(2); // Mantém 2 casas decimais
+        return number.toFixed(2);
     }
 });
