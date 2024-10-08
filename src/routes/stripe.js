@@ -28,11 +28,11 @@ router.post('/payment', async (req, res) => {
         name: name,
         phone: phone,
         address: {
-          line1:"Estrada do pocinho ,969",
+          line1: address,
           city: "quatro barras",
           state: "parana",
           postal_code: "83420000",
-          country: "Brazil",
+          country: "BR",
         }
       });
     }
@@ -48,7 +48,7 @@ router.post('/payment', async (req, res) => {
         name: name,
         phone: phone,
         address: {
-          line1:"Estrada do pocinho ,969",
+          line1: address,
           city: "quatro barras",
           state: "parana",
           postal_code: "83420000",
@@ -66,14 +66,22 @@ router.post('/payment', async (req, res) => {
       description: 'Descrição do pagamento',
       receipt_email: email, // Email para envio de recibo
       confirm: true, // Confirma automaticamente
-      return_url: 'https://inovaestudios.com.br', // Substitua pela sua URL de retorno
+      return_url: 'https://inovaestudios.com.br', // URL para onde redirecionar após o pagamento
     });
+
+    console.log("Objeto pagamento", pagamento);
 
     // Verifica se o pagamento foi bem-sucedido
     if (pagamento.status === 'succeeded') {
-      const receiptUrl = pagamento.charges.data[0].receipt_url;
-      // Redireciona para a URL do recibo do Stripe
-      return res.redirect(receiptUrl);
+      // Usar latest_charge para obter o recibo
+      if (pagamento.latest_charge) {
+        const charge = await stripe.charges.retrieve(pagamento.latest_charge);
+        const receiptUrl = charge.receipt_url; // URL do recibo
+        // Retorna a URL do recibo do Stripe
+        return res.json({ receiptPayment: receiptUrl });
+      } else {
+        throw new Error('Recibo não disponível.');
+      }
     } else {
       throw new Error('O pagamento não foi bem-sucedido.');
     }
