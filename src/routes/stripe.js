@@ -49,16 +49,13 @@ router.post('/payment', async (req, res) => {
         phone: phone,
         address: {
           line1: address,
-          city: "sao paulo",
-          state: "birigui",
-          postal_code: "1620999",
+          city: "quatro barras",
+          state: "parana",
+          postal_code: "83420000",
           country: "BR",
         }
       }
     });
-
-    
-
 
     // Criação e confirmação do PaymentIntent
     const pagamento = await stripe.paymentIntents.create({
