@@ -47,13 +47,13 @@ router.post('/payment', async (req, res) => {
         email: email,
         name: name,
         phone: phone,
-        address: {
-          line1: address,
-          city: "quatro barras",
-          state: "parana",
-          postal_code: "83420000",
-          country: "BR",
-        }
+        // address: {
+        //   line1: address,
+        //   city: "quatro barras",
+        //   state: "parana",
+        //   postal_code: "83420000",
+        //   country: "BR",
+        // }
       }
     });
 
