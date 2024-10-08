@@ -47,7 +47,7 @@ router.post('/payment', async (req, res) => {
         email: email,
         name: name,
         phone: phone,
-        // address: {
+        // address: {  //adicionar endereço de formulario
         //   line1: address,
         //   city: "quatro barras",
         //   state: "parana",
