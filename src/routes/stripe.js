@@ -49,9 +49,9 @@ router.post('/payment', async (req, res) => {
         phone: phone,
         address: {
           line1: address,
-          city: "quatro barras",
-          state: "parana",
-          postal_code: "83420000",
+          city: "sao paulo",
+          state: "birigui",
+          postal_code: "1620999",
           country: "BR",
         }
       }
